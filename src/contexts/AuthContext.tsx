@@ -1,11 +1,24 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { User, AuthError, AuthResponse } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 
-const AuthContext = createContext({})
+interface AuthContextType {
+  user: User | null
+  loading: boolean
+  signUp: (email: string, password: string) => Promise<{ data: AuthResponse['data'] | null; error: AuthError | null }>
+  signIn: (email: string, password: string) => Promise<{ data: AuthResponse['data'] | null; error: AuthError | null }>
+  signOut: () => Promise<{ error: AuthError | null }>
+}
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+interface AuthProviderProps {
+  children: ReactNode
+}
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     // 現在のセッションを取得
@@ -19,7 +32,7 @@ export const AuthProvider = ({ children }) => {
 
     // 認証状態の変更を監視
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (_event, session) => {
         setUser(session?.user ?? null)
         setLoading(false)
       }
@@ -28,7 +41,7 @@ export const AuthProvider = ({ children }) => {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signUp = async (email, password) => {
+  const signUp = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -36,7 +49,7 @@ export const AuthProvider = ({ children }) => {
     return { data, error }
   }
 
-  const signIn = async (email, password) => {
+  const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -49,7 +62,7 @@ export const AuthProvider = ({ children }) => {
     return { error }
   }
 
-  const value = {
+  const value: AuthContextType = {
     user,
     loading,
     signUp,
@@ -64,7 +77,7 @@ export const AuthProvider = ({ children }) => {
   )
 }
 
-export const useAuth = () => {
+export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext)
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider')

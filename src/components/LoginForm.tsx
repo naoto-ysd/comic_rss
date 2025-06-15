@@ -1,15 +1,19 @@
-import { useState } from 'react'
+import { useState, FormEvent } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 
-export default function LoginForm({ onToggleMode }) {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+interface LoginFormProps {
+  onToggleMode: () => void
+}
+
+export default function LoginForm({ onToggleMode }: LoginFormProps) {
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
 
   const { signIn } = useAuth()
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (!email || !password) {

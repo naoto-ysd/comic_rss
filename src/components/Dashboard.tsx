@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext'
 export default function Dashboard() {
   const { user, signOut } = useAuth()
 
-  const handleSignOut = async () => {
+  const handleSignOut = async (): Promise<void> => {
     await signOut()
   }
 

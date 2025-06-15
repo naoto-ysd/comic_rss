@@ -3,9 +3,9 @@ import LoginForm from './LoginForm'
 import SignupForm from './SignupForm'
 
 export default function Auth() {
-  const [isLogin, setIsLogin] = useState(true)
+  const [isLogin, setIsLogin] = useState<boolean>(true)
 
-  const toggleMode = () => {
+  const toggleMode = (): void => {
     setIsLogin(!isLogin)
   }
 
