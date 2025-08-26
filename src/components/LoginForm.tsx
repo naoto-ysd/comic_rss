@@ -1,5 +1,6 @@
 import { useState, FormEvent } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import PasswordResetModal from './PasswordResetModal'
 
 interface LoginFormProps {
   onToggleMode: () => void
@@ -10,6 +11,7 @@ export default function LoginForm({ onToggleMode }: LoginFormProps) {
   const [password, setPassword] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>('')
+  const [showResetModal, setShowResetModal] = useState<boolean>(false)
 
   const { signIn } = useAuth()
 
@@ -72,12 +74,27 @@ export default function LoginForm({ onToggleMode }: LoginFormProps) {
         </button>
       </form>
 
+      <div className="auth-links">
+        <button 
+          type="button" 
+          onClick={() => setShowResetModal(true)} 
+          className="link-button"
+        >
+          パスワードを忘れた方はこちら
+        </button>
+      </div>
+
       <p className="auth-switch">
         アカウントをお持ちでない方は{' '}
         <button type="button" onClick={onToggleMode} className="link-button">
           新規登録
         </button>
       </p>
+
+      <PasswordResetModal 
+        isOpen={showResetModal} 
+        onClose={() => setShowResetModal(false)} 
+      />
     </div>
   )
 } 
